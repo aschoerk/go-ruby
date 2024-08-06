@@ -4,6 +4,10 @@ func E[T any](slice []T) Enumerable[T] {
 	return &enumerableImpl[T]{EnumeratorGenerator: &sliceEnumeratorGenerator[T]{slice}}
 }
 
+func CE[T comparable](slice []T) ComparableEnumerable[T] {
+	return &comparableEnumerableImpl[T]{enumerableImpl[T]{EnumeratorGenerator: &sliceEnumeratorGenerator[T]{slice}}}
+}
+
 type sliceEnumeratorGenerator[T any] struct {
 	data []T
 }
@@ -22,5 +26,7 @@ func (g *sliceEnumerator[T]) hasNext() bool {
 }
 
 func (g *sliceEnumerator[T]) next() T {
-	return (*g.data)[g.pos]
+	res := (*g.data)[g.pos]
+	g.pos++
+	return res
 }
