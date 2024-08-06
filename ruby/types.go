@@ -11,6 +11,12 @@ type EnumeratorGenerator[T any] interface {
 
 type Predicate[T any] func(T) bool
 
+type Hash[K any, V any] interface {
+	Set(key K, value V)
+	Get(key K) (V, bool)
+	Delete(key K)
+}
+
 type Enumerable[T any] interface {
 	// Querying
 	Includes(T, ...func(T, T) bool) bool
@@ -20,15 +26,12 @@ type Enumerable[T any] interface {
 	None(...Predicate[T]) bool
 	One(...Predicate[T]) bool
 	Count(...Predicate[T]) int
-	// Tally()
+	Tally(...Hash[T, int]) Hash[T, int]
 
 	// Iterating
 	Each(func(T))
 	EachWithIndex(func(int, T))
 	Entries() []T
-}
 
-type ComparableEnumerable[T comparable] interface {
-	Enumerable[T]
-	Tally(...map[T]int) map[T]int
+	Filter(...Predicate[T]) Enumerable[T]
 }

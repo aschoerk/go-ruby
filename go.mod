@@ -3,6 +3,7 @@ module aschoerk.de/go-ruby
 go 1.22.5
 
 require (
+	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 )
