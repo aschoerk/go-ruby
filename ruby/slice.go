@@ -1,15 +1,7 @@
 package ruby
 
 func E[T any](slice []T) Enumerable[T] {
-	return &enumerableImpl[T]{EnumeratorGenerator: &sliceEnumeratorGenerator[T]{slice}}
-}
-
-func CE[T comparable](slice []T) ComparableEnumerable[T] {
-	return &comparableEnumerableImpl[T]{enumerableImpl[T]{EnumeratorGenerator: &sliceEnumeratorGenerator[T]{slice}}}
-}
-
-type sliceEnumeratorGenerator[T any] struct {
-	data []T
+	return &enumerableImpl[T]{enumerator: &sliceEnumerator[T]{&slice, 0}}
 }
 
 type sliceEnumerator[T any] struct {
@@ -17,16 +9,20 @@ type sliceEnumerator[T any] struct {
 	pos  int
 }
 
-func (g *sliceEnumeratorGenerator[T]) create() Enumerator[T] {
-	return &sliceEnumerator[T]{&g.data, 0}
-}
-
-func (g *sliceEnumerator[T]) hasNext() bool {
+func (g *sliceEnumerator[T]) HasNext() bool {
 	return g.pos < len(*g.data)
 }
 
-func (g *sliceEnumerator[T]) next() T {
-	res := (*g.data)[g.pos]
-	g.pos++
-	return res
+func (g *sliceEnumerator[T]) Next() (*T, bool) {
+	if g.HasNext() {
+		res := (*g.data)[g.pos]
+		g.pos++
+		return &res, true
+	} else {
+		return nil, false
+	}
+}
+
+func (g *sliceEnumerator[T]) Clone() Enumerator[T] {
+	return &sliceEnumerator[T]{g.data, 0}
 }
